@@ -17,6 +17,7 @@ class App extends Component {
       nowPlaying: { name: 'Not Checked', albumArt: '' }
     }
   }
+  
   getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -40,6 +41,7 @@ class App extends Component {
         });
       })
   }
+
   render() {
     return (
       <div className="App">
@@ -48,7 +50,7 @@ class App extends Component {
           Now Playing: { this.state.nowPlaying.name }
         </div>
         <div>
-          <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }}/>
+          <img src={this.state.nowPlaying.albumArt} style={{ height: 250 }}/>
         </div>
         { this.state.loggedIn &&
           <button onClick={() => this.getNowPlaying()}>

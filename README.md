@@ -4,6 +4,7 @@ It's a siple app that allos users to see what song they currently have playing o
 There are two parts to it, the auth-server, and the client. 
 
 ## Getting Statrted
+Video: https://www.youtube.com/watch?v=prayNyuN3w0
 
 ### 1) Create an App
 - Visit https://developer.spotify.com/ 
