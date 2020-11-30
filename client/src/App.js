@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import Playlist from './Playlist.js'
 
 import SpotifyWebApi from 'spotify-web-api-js';
+import Artwork from './Artwork';
+import NowPlaying from './NowPlaying';
 const spotifyApi = new SpotifyWebApi();
 
 class App extends Component {
@@ -14,10 +17,22 @@ class App extends Component {
     }
     this.state = {
       loggedIn: token ? true : false,
-      nowPlaying: { name: 'Not Checked', albumArt: '' }
+      userId: '',
+      nowPlayingActive: false,
+      nowPlaying: { name: '', albumArt: '' },
+      playlist: { playlistUri: '', playlistName: 'No Playlist', playlistArt: '' }
     }
   }
-  
+
+  getUserId() {
+    spotifyApi.getMe()
+      .then((response) => {
+        this.setState({
+          userId: response.id
+        })
+      })
+  }
+
   getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -30,16 +45,42 @@ class App extends Component {
     return hashParams;
   }
 
-  getNowPlaying(){
+  getNowPlaying() {
     spotifyApi.getMyCurrentPlaybackState()
       .then((response) => {
+        const string = response.context.uri;
+        const uri = string.split(":")[2];
         this.setState({
           nowPlaying: { 
-              name: response.item.name, 
-              albumArt: response.item.album.images[0].url
-            }
+            name: response.item.name, 
+            albumArt: response.item.album.images[0].url,
+          },
+          playlist: {
+            playlistUri: uri
+          }
         });
-      })
+      });
+    this.getPlaylist();
+  }
+
+  getPlaylist() {
+    spotifyApi.getPlaylist(this.state.userId, this.state.playlist.playlistUri)
+      .then((response) => {
+        console.log(response.name);
+        this.setState({
+          playlist: {
+            playlistName: response.name,
+            playlistArt: response.images[0].url
+          }
+        })
+      });
+  }
+
+  flipNowPlaying() {
+    this.getNowPlaying();
+    this.setState({
+      nowPlayingActive: this.state.nowPlayingActive ? false : true
+    });
   }
 
   render() {
@@ -47,19 +88,21 @@ class App extends Component {
       <div className="App">
         <a href='http://localhost:8888' > Login to Spotify </a>
         <div>
-          Now Playing: { this.state.nowPlaying.name }
-        </div>
-        <div>
-          <img src={this.state.nowPlaying.albumArt} style={{ height: 250 }}/>
-        </div>
-        { this.state.loggedIn &&
-          <button onClick={() => this.getNowPlaying()}>
-            Check Now Playing
+          <button onClick={() => this.flipNowPlaying()}>
+            { this.state.nowPlayingActive ? "Hide Now Playing" : "Show Now Playing" }
           </button>
-        }
+          { this.state.loggedIn && this.state.nowPlayingActive &&
+            <div>
+              <NowPlaying nowPlaying={this.state.nowPlaying} playlist={this.state.playlist} />
+              {/* <Artwork artwork={this.state.playlist.playlistArt} /> */}
+            </div>
+          }
+        </div>
+        <Playlist />
       </div>
     );
   }
 }
 
 export default App;
+

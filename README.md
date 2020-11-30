@@ -1,10 +1,11 @@
 # spotify-api-intro
-This Repo is the result of a tutorial that teaches how to use Spotify's API with react.
-It's a siple app that allos users to see what song they currently have playing on Spotify.
-There are two parts to it, the auth-server, and the client. 
+This Repo is the result of a tutorial that teaches how to use Spotify's API with React.
+It's a simple app that allows users to see what song they currently have playing on Spotify.
+There are two parts to it, the auth-server, and the client. The code is forked from Spotify
+developer repo https://github.com/jmperez/spotify-web-api-js.
+Video tutorial: https://www.youtube.com/watch?v=prayNyuN3w0
 
 ## Getting Statrted
-Video: https://www.youtube.com/watch?v=prayNyuN3w0
 
 ### 1) Create an App
 - Visit https://developer.spotify.com/ 
