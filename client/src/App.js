@@ -3,7 +3,6 @@ import './App.css';
 import Playlist from './Playlist.js'
 
 import SpotifyWebApi from 'spotify-web-api-js';
-import Artwork from './Artwork';
 import NowPlaying from './NowPlaying';
 const spotifyApi = new SpotifyWebApi();
 
@@ -18,8 +17,10 @@ class App extends Component {
     this.state = {
       loggedIn: token ? true : false,
       userId: '',
-      nowPlayingActive: false,
+      nowPlayingViewActive: false,
       nowPlaying: { name: '', albumArt: '' },
+      playlistViewActive: false,
+      playlists: [],
       playlist: { playlistUri: '', playlistName: 'No Playlist', playlistArt: '' }
     }
   }
@@ -27,6 +28,7 @@ class App extends Component {
   getUserId() {
     spotifyApi.getMe()
       .then((response) => {
+        console.log("in func: " + response.id);
         this.setState({
           userId: response.id
         })
@@ -60,7 +62,28 @@ class App extends Component {
           }
         });
       });
-    this.getPlaylist();
+  }
+
+  getPlaylists() {
+    spotifyApi.getUserPlaylists({limit: 40, offset:50})
+      .then((response) => {
+        this.setState({
+          playlists: response.items
+        });
+        response.items.forEach(playlist => {
+          console.log(playlist.name + " " + playlist.id);
+          // this.getTracksInPlaylist(playlist.id);
+        })
+      });
+  }
+
+  getTracksInPlaylist(playlistId) {
+    spotifyApi.getPlaylistTracks(this.state.userId, playlistId)
+      .then((response) => {
+        response.items.forEach(track => {
+          // console.log(track.track.name);
+        })
+      })
   }
 
   getPlaylist() {
@@ -76,29 +99,50 @@ class App extends Component {
       });
   }
 
-  flipNowPlaying() {
+  flipNowPlayingView() {
     this.getNowPlaying();
     this.setState({
-      nowPlayingActive: this.state.nowPlayingActive ? false : true
+      nowPlayingViewActive: !this.state.nowPlayingViewActive
     });
+  }
+
+  flipPlaylistView() {
+    this.getPlaylists();
+    this.setState({
+      playlistViewActive: !this.state.playlistViewActive
+    })
   }
 
   render() {
     return (
       <div className="App">
+
         <a href='http://localhost:8888' > Login to Spotify </a>
+        
+        {/* DISPLAYS SONG CURRENTLY PLAYING */}
         <div>
-          <button onClick={() => this.flipNowPlaying()}>
-            { this.state.nowPlayingActive ? "Hide Now Playing" : "Show Now Playing" }
+          <button onClick={() => this.flipNowPlayingView()}>
+            { this.state.nowPlayingViewActive ? "Hide Now Playing" : "Show Now Playing" }
           </button>
-          { this.state.loggedIn && this.state.nowPlayingActive &&
+          { this.state.loggedIn && this.state.nowPlayingViewActive &&
             <div>
-              <NowPlaying nowPlaying={this.state.nowPlaying} playlist={this.state.playlist} />
-              {/* <Artwork artwork={this.state.playlist.playlistArt} /> */}
+              <NowPlaying nowPlaying={this.state.nowPlaying} />
             </div>
           }
         </div>
-        <Playlist />
+
+        {/* DISPLAYS USER PLAYLISTS */}
+        <div>
+          <button onClick={() => this.flipPlaylistView()}>
+            { this.state.playlistViewActive ? "Hide Playlists" : "Show Playlists" }
+          </button>
+          { this.state.loggedIn && this.state.playlistViewActive &&
+            <div>
+              <Playlist playlists={this.state.playlists} />
+            </div>
+          }
+
+        </div>
       </div>
     );
   }

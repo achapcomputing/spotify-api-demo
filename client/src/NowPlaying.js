@@ -1,25 +1,11 @@
 import React from 'react'
 import Artwork from './Artwork';
 
-export default function NowPlaying({ nowPlaying, playlist }) {
+export default function NowPlaying({ nowPlaying }) {
     return (
         <div>
-            <div>
-                <div className="row">
-                    Now Playing: { nowPlaying.name }
-                </div>
-                <div className="row">
-                    From Playlist: { playlist.playlistName }
-                </div>
-            </div>
-            <div>
-                <div className="row">
-                    <Artwork artwork={ nowPlaying.albumArt } />
-                </div>
-                <div className="row">
-                    <Artwork artwork={ playlist.playlistArt } />
-                </div>
-            </div>
+            Now Playing: { nowPlaying.name }
+            <Artwork artwork={ nowPlaying.albumArt } />
         </div>
     )
 }
