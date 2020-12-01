@@ -4,10 +4,11 @@ import Playlist from './Playlist.js'
 
 import SpotifyWebApi from 'spotify-web-api-js';
 import NowPlaying from './NowPlaying';
+import CreatePlaylist from './CreatePlaylist';
 const spotifyApi = new SpotifyWebApi();
 
 class App extends Component {
-  constructor(){
+  constructor() {
     super();
     const params = this.getHashParams();
     const token = params.access_token;
@@ -21,7 +22,9 @@ class App extends Component {
       nowPlaying: { name: '', albumArt: '' },
       playlistViewActive: false,
       playlists: [],
-      playlist: { playlistUri: '', playlistName: 'No Playlist', playlistArt: '' }
+      createPlaylistViewActive: false,
+      savedTracks: [],
+      workoutTracks: []
     }
   }
 
@@ -38,11 +41,11 @@ class App extends Component {
   getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
-        q = window.location.hash.substring(1);
+      q = window.location.hash.substring(1);
     e = r.exec(q)
     while (e) {
-       hashParams[e[1]] = decodeURIComponent(e[2]);
-       e = r.exec(q);
+      hashParams[e[1]] = decodeURIComponent(e[2]);
+      e = r.exec(q);
     }
     return hashParams;
   }
@@ -51,8 +54,8 @@ class App extends Component {
     spotifyApi.getMyCurrentPlaybackState()
       .then((response) => {
         this.setState({
-          nowPlaying: { 
-            name: response.item.name, 
+          nowPlaying: {
+            name: response.item.name,
             albumArt: response.item.album.images[0].url,
           }
         });
@@ -60,36 +63,45 @@ class App extends Component {
   }
 
   getPlaylists() {
-    spotifyApi.getUserPlaylists({limit: 40, offset:50})
+    spotifyApi.getUserPlaylists({ limit: 40, offset: 50 })
       .then((response) => {
         this.setState({
           playlists: response.items
         });
-        response.items.forEach(playlist => {
-          console.log(playlist.name + " " + playlist.id);
-          // this.getTracksInPlaylist(playlist.id);
-        })
+        // response.items.forEach(playlist => {
+        //   console.log(playlist.name + " " + playlist.id);
+        //   this.getTracksInPlaylist(playlist.id);
+        // })
       });
   }
 
-  getTracksInPlaylist(playlistId) {
-    spotifyApi.getPlaylistTracks(this.state.userId, playlistId)
+  getMySavedTracks() {
+    const offset = 50;
+    for (var i = 1; i < 150; i += offset) {
+      spotifyApi.getMySavedTracks({ limit: offset, offset: i })
       .then((response) => {
-        response.items.forEach(track => {
-          // console.log(track.track.name);
-        })
-      })
+        this.getTrackAudioFeatures(response.items);
+      });
+    }
+      console.log(this.state.savedTracks);
   }
 
-  getPlaylist() {
-    spotifyApi.getPlaylist(this.state.userId, this.state.playlist.playlistUri)
+  getTrackAudioFeatures(tracks) {
+    const ids = [];
+    tracks.forEach(t => {
+      ids.push(t.track.id);
+    })
+    spotifyApi.getAudioFeaturesForTracks(ids)
       .then((response) => {
-        console.log(response.name);
-        this.setState({
-          playlist: {
-            playlistName: response.name,
-            playlistArt: response.images[0].url
-          }
+        var i = 0;
+        response.audio_features.forEach(t => {
+          this.state.savedTracks.push({
+            id: t.id,
+            name: tracks[i++].track.name,
+            energy: t.energy,
+            danceability: t.danceability,
+            tempo: t.tempo
+          })
         })
       });
   }
@@ -108,18 +120,25 @@ class App extends Component {
     })
   }
 
+  flipCreatePlaylistView() {
+    this.getMySavedTracks();
+    this.setState({
+      createPlaylistViewActive: !this.state.createPlaylistViewActive
+    })
+  }
+
   render() {
     return (
       <div className="App">
 
         <a href='http://localhost:8888' > Login to Spotify </a>
-        
+
         {/* DISPLAYS SONG CURRENTLY PLAYING */}
         <div>
           <button onClick={() => this.flipNowPlayingView()}>
-            { this.state.nowPlayingViewActive ? "Hide Now Playing" : "Show Now Playing" }
+            {this.state.nowPlayingViewActive ? "Hide Now Playing" : "Show Now Playing"}
           </button>
-          { this.state.loggedIn && this.state.nowPlayingViewActive &&
+          {this.state.loggedIn && this.state.nowPlayingViewActive &&
             <div>
               <NowPlaying nowPlaying={this.state.nowPlaying} />
             </div>
@@ -129,15 +148,27 @@ class App extends Component {
         {/* DISPLAYS USER PLAYLISTS */}
         <div>
           <button onClick={() => this.flipPlaylistView()}>
-            { this.state.playlistViewActive ? "Hide Playlists" : "Show Playlists" }
+            {this.state.playlistViewActive ? "Hide Playlists" : "Show Playlists"}
           </button>
-          { this.state.loggedIn && this.state.playlistViewActive &&
+          {this.state.loggedIn && this.state.playlistViewActive &&
             <div>
-              <Playlist playlists={this.state.playlists} />
+              <Playlist userId={this.state.userId} playlists={this.state.playlists} />
             </div>
           }
-
         </div>
+
+        {/* CREATES WORKOUT PLAYLIST */}
+        <div>
+          <button onClick={() => this.flipCreatePlaylistView()}>
+            Create Workout Playlist
+          </button>
+          {this.state.loggedIn && this.state.createPlaylistViewActive &&
+            <div>
+              <CreatePlaylist savedTracks={this.state.savedTracks} workoutTracks={this.state.workoutTracks} />
+            </div>
+          }
+        </div>
+
       </div>
     );
   }

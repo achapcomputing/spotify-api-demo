@@ -8,7 +8,7 @@ export default function Playlist({ userId, playlists }) {
     const tracks = {};
 
     function getPlaylistTracks(id) {
-        console.log(id);
+        // console.log(id);
         spotifyApi.getPlaylistTracks(userId, id)
             .then((response) => {
                 response.items.forEach(t => {
@@ -22,10 +22,10 @@ export default function Playlist({ userId, playlists }) {
     function sortTracks() {
         console.log(tracks);
         // const parsedTracks = JSON.parse(tracks);
-        for (let t in tracks) {
+        // for (let t in tracks) {
             // const name = tracks[parsedTracks];
-            console.log("hi~");
-        }
+            // console.log("hi~");
+        // }
     }
 
     return (
