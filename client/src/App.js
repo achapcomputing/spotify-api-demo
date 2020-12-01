@@ -50,15 +50,10 @@ class App extends Component {
   getNowPlaying() {
     spotifyApi.getMyCurrentPlaybackState()
       .then((response) => {
-        const string = response.context.uri;
-        const uri = string.split(":")[2];
         this.setState({
           nowPlaying: { 
             name: response.item.name, 
             albumArt: response.item.album.images[0].url,
-          },
-          playlist: {
-            playlistUri: uri
           }
         });
       });
