@@ -30,7 +30,7 @@ export default function Playlist({ userId, playlists }) {
 
     return (
         <div>
-            <h2>Your Playlists:</h2>
+            <h2>{userId} Playlists:</h2>
 
             <div>
                 <ul>

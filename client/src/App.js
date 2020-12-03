@@ -31,7 +31,6 @@ class App extends Component {
   getUserId() {
     spotifyApi.getMe()
       .then((response) => {
-        console.log("in func: " + response.id);
         this.setState({
           userId: response.id
         })
@@ -63,6 +62,7 @@ class App extends Component {
   }
 
   getPlaylists() {
+    this.getUserId();
     spotifyApi.getUserPlaylists({ limit: 40, offset: 50 })
       .then((response) => {
         this.setState({
@@ -76,6 +76,7 @@ class App extends Component {
   }
 
   getMySavedTracks() {
+    this.getUserId();
     const offset = 50;
     for (var i = 1; i < 150; i += offset) {
       spotifyApi.getMySavedTracks({ limit: offset, offset: i })
@@ -97,6 +98,7 @@ class App extends Component {
         response.audio_features.forEach(t => {
           this.state.savedTracks.push({
             id: t.id,
+            uri: t.uri,
             name: tracks[i++].track.name,
             energy: t.energy,
             danceability: t.danceability,
@@ -162,9 +164,10 @@ class App extends Component {
           <button onClick={() => this.flipCreatePlaylistView()}>
             Create Workout Playlist
           </button>
-          {this.state.loggedIn && this.state.createPlaylistViewActive &&
+          {
+            this.state.loggedIn && this.state.createPlaylistViewActive &&
             <div>
-              <CreatePlaylist savedTracks={this.state.savedTracks} workoutTracks={this.state.workoutTracks} />
+              <CreatePlaylist userId={this.state.userId} savedTracks={this.state.savedTracks} workoutTracks={this.state.workoutTracks} />
             </div>
           }
         </div>
