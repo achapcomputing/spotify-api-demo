@@ -14,7 +14,7 @@ var cookieParser = require('cookie-parser');
 
 var client_id = 'b8267324f80b4a9b9ba8c410e566b844'; // Your client id
 var client_secret = 'c5d963f203834cdebc859edee1a1c44c'; // Your secret
-var redirect_uri = 'http://achapcomputing.github.io/pumpify/callback'; // Or Your redirect uri
+var redirect_uri = 'http://achapcomputing.github.io:8888/pumpify/callback'; // Or Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -38,7 +38,7 @@ var app = express();
 app.use(express.static(__dirname + '/public'))
    .use(cookieParser());
 
-app.get('/login', function(req, res) {
+app.get('/pumpify/login', function(req, res) {
 
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
@@ -55,7 +55,7 @@ app.get('/login', function(req, res) {
     }));
 });
 
-app.get('/callback', function(req, res) {
+app.get('/pumpify/callback', function(req, res) {
 
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -102,7 +102,7 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('http://achapcomputing.github.io/pumpify/#' +
+        res.redirect('http://achapcomputing.github.io:3000/pumpify/#' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
@@ -117,7 +117,7 @@ app.get('/callback', function(req, res) {
   }
 });
 
-app.get('/refresh_token', function(req, res) {
+app.get('/pumpify/refresh_token', function(req, res) {
 
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
