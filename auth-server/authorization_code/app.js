@@ -14,7 +14,7 @@ var cookieParser = require('cookie-parser');
 
 var client_id = 'b8267324f80b4a9b9ba8c410e566b844'; // Your client id
 var client_secret = 'c5d963f203834cdebc859edee1a1c44c'; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Or Your redirect uri
+var redirect_uri = 'http://achapcomputing.github.io/pumpify/callback'; // Or Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -102,7 +102,7 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('http://localhost:3000/#' +
+        res.redirect('http://achapcomputing.github.io/pumpify/#' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token

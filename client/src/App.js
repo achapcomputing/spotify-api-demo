@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import Playlist from './Playlist.js'
+import Playlist from './components/Playlist.js'
 
 import SpotifyWebApi from 'spotify-web-api-js';
-import NowPlaying from './NowPlaying';
-import CreatePlaylist from './CreatePlaylist';
+import NowPlaying from './components/NowPlaying';
+import CreatePlaylist from './components/CreatePlaylist';
 const spotifyApi = new SpotifyWebApi();
 
 class App extends Component {
