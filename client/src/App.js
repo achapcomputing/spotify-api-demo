@@ -23,6 +23,7 @@ class App extends Component {
       playlistViewActive: false,
       playlists: [],
       createPlaylistViewActive: false,
+      totalSaved: '',
       savedTracks: [],
       workoutTracks: []
     }
@@ -77,14 +78,34 @@ class App extends Component {
 
   getMySavedTracks() {
     this.getUserId();
-    const offset = 50;
-    for (var i = 1; i < 150; i += offset) {
-      spotifyApi.getMySavedTracks({ limit: offset, offset: i })
+    spotifyApi.getMySavedTracks()
       .then((response) => {
-        this.getTrackAudioFeatures(response.items);
-      });
-    }
-      console.log(this.state.savedTracks);
+        this.setState({
+          totalSaved: response.total
+        });
+      })
+      .then(() => {
+        console.log("out t " + this.state.totalSaved);
+        const offset = 50;
+        for (var i = 0; i < this.state.totalSaved; i += offset) {
+          spotifyApi.getMySavedTracks({ limit: offset, offset: i })
+            .then((response) => {
+              // this.getTrackAudioFeatures(response.items);
+              console.log(response.offset);
+            })
+            .catch((err) => {
+              console.error(err);
+              console.error("ERROR: Error getting saved tracks");
+            });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        console.error("ERROR: Error getting amount of saved tracks");
+      })
+      .then(() => {
+        // this.getTrackAudioFeatures(this.state.savedTracks);
+      })
   }
 
   getTrackAudioFeatures(tracks) {
