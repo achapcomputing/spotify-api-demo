@@ -141,7 +141,7 @@ class App extends Component {
     return (
       <div className="App">
 
-        <a href='http://achapcomputing.github.io:8888/pumpify/callback' > Login to Spotify </a>
+        <a href='http://achapcomputing.github.io:8888/pumpify' > Login to Spotify </a>
 
         {/* DISPLAYS SONG CURRENTLY PLAYING */}
         <div>
