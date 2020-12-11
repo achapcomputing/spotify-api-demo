@@ -5,10 +5,13 @@ const spotifyApi = new SpotifyWebApi();
 export default function CreatePlaylist({ userId, savedTracks, workoutTracks }) {
 
     const workoutUris = [];
+    const energyFilter = 0.7;
+    const danceabilityFilter = 0.5;
+    const tempoFilter = 120;
 
     function getWorkoutTracks() {
         savedTracks.forEach(t => {
-          if (t.energy >= 0.3 && t.danceability >= 0.3 && t.tempo >= 120) {
+          if (t.energy >= energyFilter && t.danceability >= danceabilityFilter && t.tempo >= tempoFilter) {
             workoutUris.push(t.uri);
           }
         });
@@ -16,7 +19,12 @@ export default function CreatePlaylist({ userId, savedTracks, workoutTracks }) {
     }
 
     function createPlaylist() {
-        spotifyApi.createPlaylist(userId, { name: "API Playlist", public: true })
+        spotifyApi.createPlaylist(userId, 
+            { 
+                name: "API Playlist", 
+                description: `Liked Songs filtered by Energy: ${energyFilter}, Danceability: ${danceabilityFilter}, and Tempo: ${tempoFilter}.`,
+                public: true
+            })
             .then((response) => {
                 console.log("MAKING PLAYLIST! " + response.id);
                 addTracksToPlaylist(response.id);

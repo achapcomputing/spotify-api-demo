@@ -78,34 +78,21 @@ class App extends Component {
 
   getMySavedTracks() {
     this.getUserId();
-    spotifyApi.getMySavedTracks()
-      .then((response) => {
-        this.setState({
-          totalSaved: response.total
-        });
-      })
-      .then(() => {
-        console.log("out t " + this.state.totalSaved);
-        const offset = 50;
-        for (var i = 0; i < this.state.totalSaved; i += offset) {
-          spotifyApi.getMySavedTracks({ limit: offset, offset: i })
-            .then((response) => {
-              // this.getTrackAudioFeatures(response.items);
-              console.log(response.offset);
-            })
-            .catch((err) => {
-              console.error(err);
-              console.error("ERROR: Error getting saved tracks");
-            });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        console.error("ERROR: Error getting amount of saved tracks");
-      })
-      .then(() => {
-        // this.getTrackAudioFeatures(this.state.savedTracks);
-      })
+    const offset = 50;
+    for (var i = 0; i < 2000; i += offset) {
+      spotifyApi.getMySavedTracks({ limit: offset, offset: i })
+        .then((response) => {
+          this.setState({
+            totalSaved: response.total
+          })
+          this.getTrackAudioFeatures(response.items);
+          console.log(response.offset);
+        })
+        .catch((err) => {
+          console.error(err);
+          console.error("ERROR: Error getting saved tracks");
+        })
+    }
   }
 
   getTrackAudioFeatures(tracks) {
