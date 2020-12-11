@@ -65,7 +65,7 @@ app.get('/pumpify/callback', function(req, res) {
   var storedState = req.cookies ? req.cookies[stateKey] : null;
 
   if (state === null || state !== storedState) {
-    res.redirect('/#' +
+    res.redirect('/pumpify/#' +
       querystring.stringify({
         error: 'state_mismatch'
       }));
@@ -108,7 +108,7 @@ app.get('/pumpify/callback', function(req, res) {
             refresh_token: refresh_token
           }));
       } else {
-        res.redirect('/#' +
+        res.redirect('/pumpify/#' +
           querystring.stringify({
             error: 'invalid_token'
           }));
